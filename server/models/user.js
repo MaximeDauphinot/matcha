@@ -21,6 +21,11 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
+    validate: {
+      isEmail: {
+        msg: "Invalid email",
+      },
+    },
   },
   login: {
     type: Sequelize.STRING,
@@ -30,6 +35,13 @@ const User = sequelize.define("user", {
   password: {
     type: Sequelize.STRING,
     allowNull: false,
+    validate: {
+      is: {
+        args: "/^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[#$^+=!*()@%&]).{8,}$/",
+        msg:
+          "The password must contain atleast 8 characters including at least 1 uppercase, 1 lowercase and one digit.",
+      },
+    },
   },
 });
 

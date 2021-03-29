@@ -1,7 +1,11 @@
 import React from "react";
 import {
-  Button, TextField, Link, Grid,
-  Typography, makeStyles
+  Button,
+  TextField,
+  Link,
+  Box,
+  Typography,
+  makeStyles,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -12,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}))
+}));
 
 const ResetPassword = ({ url }) => {
   const classes = useStyles();
@@ -43,14 +47,12 @@ const ResetPassword = ({ url }) => {
         >
           Send email
         </Button>
-        <Grid container justify="flex-end">
-          <Grid item xs={12}>
-            <Link
-              href={`${url}/sign-in`}
-              variant="body2"
-            >{`Have an account? Sign In`}</Link>
-          </Grid>
-        </Grid>
+        <Box textAlign="center">
+          <Link
+            href={`${url}/sign-in`}
+            variant="body2"
+          >{`Have an account? Sign In`}</Link>
+        </Box>
       </form>
     </>
   );

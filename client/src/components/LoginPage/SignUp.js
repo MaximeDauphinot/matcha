@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { BrowserRouter as Redirect } from "react-router-dom";
 import {
-  Button, TextField, Link, Box,
-  Grid, Typography, makeStyles
+  Button,
+  TextField,
+  Link,
+  Box,
+  Grid,
+  Typography,
+  makeStyles,
+  CircularProgress,
+  InputAdornment,
+  IconButton,
 } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -18,18 +26,23 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
   },
-}))
+  message: {
+    color: "red",
+  },
+}));
 
 const SignUp = ({ url }) => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
-  const [redirect, setRedirect] = useState(false);
+  const [message, setMessage] = useState("");
+  // const [redirect, setRedirect] = useState(false);
   const [newUser, setNewUser] = useState({
-    firstName: undefined,
-    lastName: undefined,
-    email: undefined,
-    login: undefined,
-    password: undefined,
+    firstName: null,
+    lastName: null,
+    email: null,
+    login: null,
+    password: null,
+    showPassword: false,
   });
 
   // useEffect(() => {
@@ -47,7 +60,7 @@ const SignUp = ({ url }) => {
 
   const saveUser = async () => {
     try {
-      await fetch("http://localhost:5000/new-user", {
+      const response = await fetch("http://localhost:5000/new-user", {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
@@ -55,18 +68,28 @@ const SignUp = ({ url }) => {
         method: "POST",
         body: JSON.stringify(newUser),
       });
+      const jsonRes = await response.json();
 
       setLoading(false);
-      setNewUser({
-        firstName: "",
-        lastName: "",
-        email: "",
-        login: "",
-        password: "",
-      });
-      setRedirect(true);
+
+      if (
+        jsonRes.message &&
+        (jsonRes.status === 409 || jsonRes.status === 422)
+      ) {
+        setMessage(jsonRes.message);
+      } else {
+        setNewUser({
+          firstName: "",
+          lastName: "",
+          email: "",
+          login: "",
+          password: "",
+          showPassword: false,
+        });
+        // setRedirect(true);
+      }
     } catch (err) {
-      throw new Error("Something went wrong when sendind datas");
+      throw new Error("Something went wrong while sending datas");
     }
   };
 
@@ -86,106 +109,131 @@ const SignUp = ({ url }) => {
   };
 
   return (
+    // <>
+    //   {redirect ? (
+    //     <Redirect to="/Login/sign-in" />
+    //   ) : (
     <>
-      {redirect ? (
-        <Redirect to="/Login/sign-in" />
-      ) : (
-        <>
-          <Typography component="h1" variant="h5">
-            Sign Up
+      <Typography component="h1" variant="h5">
+        Sign Up
+      </Typography>
+      <form onSubmit={handleSubmit} className={classes.form}>
+        <Box className={classes.formRow}>
+          <TextField
+            required
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="firstName"
+            label="First name"
+            name="firstName"
+            // autoComplete="firstName"
+            value={newUser.firstName}
+            onChange={handleChange}
+            autoFocus
+          />
+          <TextField
+            required
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            id="lastName"
+            label="Last name"
+            name="lastName"
+            // autoComplete="lastName"
+            value={newUser.lastName}
+            onChange={handleChange}
+          />
+        </Box>
+        <TextField
+          required
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          // autoComplete="email"
+          value={newUser.email}
+          onChange={handleChange}
+        />
+        <TextField
+          required
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          id="login"
+          label="Login"
+          name="login"
+          // autoComplete="login"
+          value={newUser.login}
+          onChange={handleChange}
+        />
+        <TextField
+          required
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          name="password"
+          label="Password"
+          type={newUser.showPassword ? "text" : "password"}
+          id="password"
+          // autoComplete="current-password"
+          value={newUser.password}
+          onChange={handleChange}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() =>
+                    setNewUser({
+                      ...newUser,
+                      showPassword: !newUser.showPassword,
+                    })
+                  }
+                  // onMouseDown={handleMouseDownPassword}
+                >
+                  {newUser.showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          className={classes.submit}
+        >
+          Sign Up
+        </Button>
+        <Grid container>
+          <Grid item xs>
+            <Link href={`${url}/reset-password`} variant="body2">
+              Forgot password?
+            </Link>
+          </Grid>
+          <Grid item>
+            <Link
+              href={`${url}/sign-in`}
+              variant="body2"
+            >{`Have an account? Sign In`}</Link>
+          </Grid>
+        </Grid>
+      </form>
+      {loading ? <CircularProgress color="secondary" /> : null}
+      {message ? (
+        <Box mt={4}>
+          <Typography className={classes.message} component="h1" variant="h6">
+            {message}
           </Typography>
-          <form onSubmit={handleSubmit} className={classes.form}>
-            <Box className={classes.formRow}>
-              <TextField
-                required
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                id="firstName"
-                label="First name"
-                name="firstName"
-                // autoComplete="firstName"
-                value={newUser.firstName}
-                onChange={handleChange}
-                autoFocus
-              />
-              <TextField
-                required
-                variant="outlined"
-                margin="normal"
-                fullWidth
-                id="lastName"
-                label="Last name"
-                name="lastName"
-                // autoComplete="lastName"
-                value={newUser.lastName}
-                onChange={handleChange}
-              />
-            </Box>
-            <TextField
-              required
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              // autoComplete="email"
-              value={newUser.email}
-              onChange={handleChange}
-            />
-            <TextField
-              required
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              id="login"
-              label="Login"
-              name="login"
-              // autoComplete="login"
-              value={newUser.login}
-              onChange={handleChange}
-            />
-            <TextField
-              required
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              // autoComplete="current-password"
-              value={newUser.password}
-              onChange={handleChange}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign Up
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href={`${url}/reset-password`} variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link
-                  href={`${url}/sign-in`}
-                  variant="body2"
-                >{`Have an account? Sign In`}</Link>
-              </Grid>
-            </Grid>
-          </form>
-          {loading ? <CircularProgress color="secondary" /> : null}
-        </>
-      )}
+        </Box>
+      ) : null}
     </>
+    //   )}
+    // </>
   );
 };
 

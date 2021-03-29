@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
 exports.postNewUser = async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
@@ -20,14 +20,43 @@ exports.postNewUser = async (req, res, next) => {
     });
 
     res.status(200).json({
-      message: "User succesfully saved !",
+      message: "User succesfully created !",
+      status: 200,
     });
   } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-      throw new Error("Something went wrong");
+    const errObj = {};
+
+    err.errors.map((er) => {
+      errObj[er.path] = er.message;
+    });
+
+    if (err.name === "SequelizeUniqueConstraintError") {
+      if (errObj["users.email"])
+        res.status(409).json({
+          status: 409,
+          message: "Email is already taken",
+        });
+
+      if (errObj["users.login"])
+        res.status(409).json({
+          status: 409,
+          message: "Login is already taken",
+        });
+    } else if (err.name === "SequelizeValidationError") {
+      if (errObj["email"])
+        res.status(422).json({
+          status: 422,
+          message: errObj["email"],
+        });
+
+      if (errObj["password"])
+        res.status(422).json({
+          status: 422,
+          message: errObj["password"],
+        });
+    } else {
+      next(err);
     }
-    next(err);
   }
 };
 

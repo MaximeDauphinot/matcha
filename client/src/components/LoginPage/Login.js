@@ -5,8 +5,15 @@ import {
   useRouteMatch,
 } from "react-router-dom";
 import {
-  CssBaseline, Link, Box, Container, Card,
-  CardContent, Typography, Avatar, makeStyles,
+  CssBaseline,
+  Link,
+  Box,
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  makeStyles,
 } from "@material-ui/core";
 import PeopleAltRoundedIcon from "@material-ui/icons/PeopleAltRounded";
 
@@ -33,8 +40,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
-}))
-
+}));
 
 const Copyright = () => {
   return (
