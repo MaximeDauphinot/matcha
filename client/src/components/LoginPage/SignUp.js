@@ -37,11 +37,11 @@ const SignUp = ({ url }) => {
   const [message, setMessage] = useState("");
   // const [redirect, setRedirect] = useState(false);
   const [newUser, setNewUser] = useState({
-    firstName: null,
-    lastName: null,
-    email: null,
-    login: null,
-    password: null,
+    firstName: "",
+    lastName: "",
+    email: "",
+    login: "",
+    password: "",
     showPassword: false,
   });
 
