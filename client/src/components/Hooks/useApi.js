@@ -13,9 +13,10 @@ export const useApi = (url) => {
     data: [],
   });
 
-  const setPartData = (partialData) => setData({ ...data, ...partialData });
 
   useEffect(() => {
+    const setPartData = (partialData) => setData({ ...data, ...partialData });
+
     setPartData({
       state: apiStates.LOADING,
     });
@@ -33,7 +34,7 @@ export const useApi = (url) => {
           error: "fetch failed",
         });
       });
-  }, []);
+  }, [data, url]);
 
   return data;
 };

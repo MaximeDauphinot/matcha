@@ -4,27 +4,45 @@ import {
   Route,
   useRouteMatch,
 } from "react-router-dom";
+import {
+  CssBaseline, Link, Box, Container, Card,
+  CardContent, Typography, Avatar, makeStyles,
+} from "@material-ui/core";
+import PeopleAltRoundedIcon from "@material-ui/icons/PeopleAltRounded";
+
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import ResetPassword from "./ResetPassword";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import LinkMUI from "@material-ui/core/Link";
-import Box from "@material-ui/core/Box";
-import Container from "@material-ui/core/Container";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
-import PeopleAltRoundedIcon from "@material-ui/icons/PeopleAltRounded";
-import { useStyles } from "./styles/LoginPageStyle";
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    margin: "auto",
+  },
+  paper: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  cardContent: {
+    padding: "20px 48px 0px",
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+}))
+
 
 const Copyright = () => {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <LinkMUI color="inherit" href="">
+      <Link color="inherit" href="">
         Matcha
-      </LinkMUI>{" "}
+      </Link>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -40,7 +58,7 @@ const Login = () => {
       <Card className={classes.root}>
         <CardContent className={classes.cardContent}>
           <CssBaseline />
-          <div className={classes.paper}>
+          <Box className={classes.paper}>
             <Avatar className={classes.avatar}>
               <PeopleAltRoundedIcon />
             </Avatar>
@@ -59,7 +77,7 @@ const Login = () => {
                 component={() => <ResetPassword url={url} />}
               />
             </Switch>
-          </div>
+          </Box>
           <Box mt={4}>
             <Copyright />
           </Box>

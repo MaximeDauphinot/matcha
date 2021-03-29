@@ -1,12 +1,24 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Redirect } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import {
+  Button, TextField, Link, Box,
+  Grid, Typography, makeStyles
+} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { useStyles } from "./styles/LoginPageStyle";
+
+const useStyles = makeStyles((theme) => ({
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  formRow: {
+    display: "flex",
+    flexDirection: "row",
+  },
+}))
 
 const SignUp = ({ url }) => {
   const classes = useStyles();
@@ -74,16 +86,16 @@ const SignUp = ({ url }) => {
   };
 
   return (
-    <Fragment>
+    <>
       {redirect ? (
         <Redirect to="/Login/sign-in" />
       ) : (
-        <Fragment>
+        <>
           <Typography component="h1" variant="h5">
             Sign Up
           </Typography>
           <form onSubmit={handleSubmit} className={classes.form}>
-            <div className={classes.formRow}>
+            <Box className={classes.formRow}>
               <TextField
                 required
                 variant="outlined"
@@ -109,7 +121,7 @@ const SignUp = ({ url }) => {
                 value={newUser.lastName}
                 onChange={handleChange}
               />
-            </div>
+            </Box>
             <TextField
               required
               variant="outlined"
@@ -171,9 +183,9 @@ const SignUp = ({ url }) => {
             </Grid>
           </form>
           {loading ? <CircularProgress color="secondary" /> : null}
-        </Fragment>
+        </>
       )}
-    </Fragment>
+    </>
   );
 };
 

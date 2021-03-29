@@ -1,16 +1,24 @@
-import React, { Fragment } from "react";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { useStyles } from "./styles/LoginPageStyle";
+import React from "react";
+import {
+  Button, TextField, Link, Grid,
+  Typography, makeStyles
+} from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}))
 
 const ResetPassword = ({ url }) => {
   const classes = useStyles();
 
   return (
-    <Fragment>
+    <>
       <Typography component="h1" variant="h5">
         Reset Password
       </Typography>
@@ -35,8 +43,8 @@ const ResetPassword = ({ url }) => {
         >
           Send email
         </Button>
-        <Grid container style={{ justifyContent: "flex-end" }}>
-          <Grid item>
+        <Grid container justify="flex-end">
+          <Grid item xs={12}>
             <Link
               href={`${url}/sign-in`}
               variant="body2"
@@ -44,7 +52,7 @@ const ResetPassword = ({ url }) => {
           </Grid>
         </Grid>
       </form>
-    </Fragment>
+    </>
   );
 };
 export default ResetPassword;
