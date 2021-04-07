@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Redirect } from "react-router-dom";
+// import { BrowserRouter as Redirect } from "react-router-dom";
 import {
   Button,
   TextField,
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
   message: {
     color: "red",
+    fontWeight: 100,
   },
 }));
 
@@ -86,6 +87,7 @@ const SignUp = ({ url }) => {
           password: "",
           showPassword: false,
         });
+        setMessage("");
         // setRedirect(true);
       }
     } catch (err) {
@@ -127,7 +129,6 @@ const SignUp = ({ url }) => {
             id="firstName"
             label="First name"
             name="firstName"
-            // autoComplete="firstName"
             value={newUser.firstName}
             onChange={handleChange}
             autoFocus
@@ -140,7 +141,6 @@ const SignUp = ({ url }) => {
             id="lastName"
             label="Last name"
             name="lastName"
-            // autoComplete="lastName"
             value={newUser.lastName}
             onChange={handleChange}
           />
@@ -153,7 +153,6 @@ const SignUp = ({ url }) => {
           id="email"
           label="Email Address"
           name="email"
-          // autoComplete="email"
           value={newUser.email}
           onChange={handleChange}
         />
@@ -165,7 +164,6 @@ const SignUp = ({ url }) => {
           id="login"
           label="Login"
           name="login"
-          // autoComplete="login"
           value={newUser.login}
           onChange={handleChange}
         />
@@ -178,7 +176,6 @@ const SignUp = ({ url }) => {
           label="Password"
           type={newUser.showPassword ? "text" : "password"}
           id="password"
-          // autoComplete="current-password"
           value={newUser.password}
           onChange={handleChange}
           InputProps={{
@@ -192,7 +189,6 @@ const SignUp = ({ url }) => {
                       showPassword: !newUser.showPassword,
                     })
                   }
-                  // onMouseDown={handleMouseDownPassword}
                 >
                   {newUser.showPassword ? <Visibility /> : <VisibilityOff />}
                 </IconButton>

@@ -3,12 +3,8 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 
 exports.postNewUser = async (req, res, next) => {
-  // console.log(req.body);
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  const email = req.body.email;
-  const login = req.body.login;
-  const hashedPassword = await bcrypt.hash(req.body.password, 12);
+  const { firstName, lastName, email, login, password } = req.body;
+  const errObj = {};
 
   try {
     await User.create({
@@ -16,7 +12,7 @@ exports.postNewUser = async (req, res, next) => {
       lastName: lastName,
       email: email,
       login: login,
-      password: hashedPassword,
+      password: password,
     });
 
     res.status(200).json({
@@ -24,35 +20,25 @@ exports.postNewUser = async (req, res, next) => {
       status: 200,
     });
   } catch (err) {
-    const errObj = {};
-
     err.errors.map((er) => {
       errObj[er.path] = er.message;
     });
 
+    //Check if there's no double
     if (err.name === "SequelizeUniqueConstraintError") {
-      if (errObj["users.email"])
+      if (errObj["users.email"] || errObj["users.login"])
         res.status(409).json({
           status: 409,
-          message: "Email is already taken",
+          message: errObj["users.email"]
+            ? "Email is already taken"
+            : "Login is already taken",
         });
-
-      if (errObj["users.login"])
-        res.status(409).json({
-          status: 409,
-          message: "Login is already taken",
-        });
+      //Check if it's valid data
     } else if (err.name === "SequelizeValidationError") {
-      if (errObj["email"])
+      if (errObj["email"] || errObj["password"])
         res.status(422).json({
           status: 422,
-          message: errObj["email"],
-        });
-
-      if (errObj["password"])
-        res.status(422).json({
-          status: 422,
-          message: errObj["password"],
+          message: errObj["email"] ? errObj["email"] : errObj["password"],
         });
     } else {
       next(err);
@@ -60,44 +46,35 @@ exports.postNewUser = async (req, res, next) => {
   }
 };
 
-// exports.postNewUser = (req, res, next) => {
-//   const nom = req.body.nom;
-//   const prenom = req.body.prenom;
-//   const email = req.body.email;
-//   const password = req.body.password;
-//   const confirmPassword = req.body.confirmPassword;
-//   User.findOne({ email: email })
-//     .then((userDoc) => {
-//       if (userDoc) {
-//         return res.send({ message: "Email already exist" });
-//       }
-//       if (confirmPassword !== password) {
-//         return res.send({ message: "Passwords are not the same" });
-//       }
-//       return bcrypt
-//         .hash(password, 12)
-//         .then((hashedPassword) => {
-//           const user = new User({
-//             nom: nom,
-//             prenom: prenom,
-//             email: email,
-//             password: hashedPassword,
-//           });
-//           return user.save();
-//         })
-//         .then((result) => res.send({ message: "User Saved !" }));
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// };
-
 // exports.getLogin = (req, res, next) => {
 //   res.send({
 //     token: req.session.csrfToken,
 //     isLoggedIn: req.session.isLoggedIn,
 //   });
 // };
+
+exports.postLogin = async (req, res, next) => {
+  const { login, password } = req.body;
+
+  try {
+    const [{ dataValues }] = await User.findAll({
+      where: {
+        login: login,
+      },
+    });
+
+    const doMatch = await bcrypt.compare(password, dataValues.password);
+
+    if (doMatch) {
+      return res.send({ message: "All good :D" });
+    } else {
+      return res.send({ message: "Wrong password" });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.send({ message: "No user found" });
+  }
+};
 
 // exports.postLogin = (req, res, next) => {
 //   const email = req.body.email;

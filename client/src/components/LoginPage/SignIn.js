@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  Button, TextField, Typography,
-  FormControlLabel, Checkbox,
-  Link, Grid, makeStyles
+  Button,
+  TextField,
+  Typography,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Box,
+  Grid,
+  makeStyles,
+  CircularProgress,
+  InputAdornment,
+  IconButton,
 } from "@material-ui/core";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -13,27 +23,71 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}))
+  message: {
+    color: "red",
+    fontWeight: 100,
+  },
+}));
 
 const SignIn = ({ url }) => {
   const classes = useStyles();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [user, setUser] = useState({
+    login: "",
+    password: "",
+    showPassword: false,
+  });
+
+  const signIn = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/sign-in", {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(user),
+      });
+      const jsonRes = await response.json();
+
+      setMessage(jsonRes.message);
+      setLoading(false);
+    } catch (err) {
+      throw new Error("Something went wrong while sending datas");
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setLoading(true);
+    signIn();
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   return (
     <>
       <Typography component="h1" variant="h5">
         Sign In
       </Typography>
-      <form className={classes.form}>
+      <form onSubmit={handleSubmit} className={classes.form}>
         <TextField
           required
           variant="outlined"
           margin="normal"
           fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          autoFocus
+          id="login"
+          label="Login"
+          name="login"
+          value={user.login}
+          onChange={handleChange}
         />
         <TextField
           required
@@ -42,9 +96,27 @@ const SignIn = ({ url }) => {
           fullWidth
           name="password"
           label="Password"
-          type="password"
+          type={user.showPassword ? "text" : "password"}
           id="password"
-          autoComplete="current-password"
+          value={user.password}
+          onChange={handleChange}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={() =>
+                    setUser({
+                      ...user,
+                      showPassword: !user.showPassword,
+                    })
+                  }
+                >
+                  {user.showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
@@ -73,6 +145,14 @@ const SignIn = ({ url }) => {
           </Grid>
         </Grid>
       </form>
+      {loading ? <CircularProgress color="secondary" /> : null}
+      {message ? (
+        <Box mt={4}>
+          <Typography className={classes.message} component="h1" variant="h6">
+            {message}
+          </Typography>
+        </Box>
+      ) : null}
     </>
   );
 };
